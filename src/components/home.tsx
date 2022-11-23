@@ -18,7 +18,7 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <View style={styles.counterView}>
-        <Text style={styles.count}>Counter</Text>
+        <Text style={styles.count}>Counter(CICD test)</Text>
         <Text style={styles.count}>{count}</Text>
       </View>
       <View style={styles.buttonContainer}>

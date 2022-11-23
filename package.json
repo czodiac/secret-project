@@ -46,8 +46,8 @@
     "ts",
     "eslint"
   ],
-  "homepage": "https://github.com/iBhavesh/expo-template-redux_tookit-typescript",
-  "author": "Bhavesh Sharma",
+  "homepage": "/",
+  "author": "Iltae",
   "license": "MIT",
   "private": true
 }
