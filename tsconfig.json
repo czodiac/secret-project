@@ -3,6 +3,7 @@
     "jsx": "react",
     "strict": true,
     "useUnknownInCatchVariables": true,
-    "esModuleInterop": true,
-  }
+    "esModuleInterop": true
+  },
+  "extends": "expo/tsconfig.base"
 }
