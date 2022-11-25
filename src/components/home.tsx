@@ -3,8 +3,12 @@ import { StyleSheet, Text, View } from "react-native";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { decrement, increment } from "../features/counter/counter";
 import { Button } from "react-native-paper";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StackParams } from "../common/stackParams";
 
-const Home = () => {
+type Props = NativeStackScreenProps<StackParams, "Home">;
+
+const Home = ({ navigation }: Props) => {
   const count = useAppSelector((state) => state.counter.count);
   const dispatch = useAppDispatch();
 
@@ -18,7 +22,6 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <View style={styles.counterView}>
-        <Text style={styles.count}>Counter(CICD test)</Text>
         <Text style={styles.count}>{count}</Text>
       </View>
       <View style={styles.buttonContainer}>

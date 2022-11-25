@@ -2,7 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, useFormik } from "formik";
-import { Alert, Modal, StyleSheet, Text, Pressable, View } from "react-native";
+import {
+  Alert,
+  Modal,
+  StyleSheet,
+  Text,
+  Pressable,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import {
   setModalWidth,
   getLoginModalStatus,
@@ -10,10 +18,10 @@ import {
   getRegisterModalStatus,
   setRegisterModalStatus,
 } from "../../slices/modalSlice";
-import { Button, Colors, TextInput } from "react-native-paper";
+import { Button, Colors, TextInput, IconButton } from "react-native-paper";
 import * as yup from "yup";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { red200 } from "react-native-paper/lib/typescript/styles/colors";
+import { BlurView } from "expo-blur";
 
 const LoginModal = () => {
   const dispatch = useDispatch();
@@ -33,7 +41,7 @@ const LoginModal = () => {
     //formik.values.loginPassword = "";
   };
 
-  const login = (values) => {
+  const processLogin = (values: { email: string; password: string }) => {
     const { email, password } = {
       email: "sdf@sdf.sdf", //values.email,
       password: "123123", //values.password,
@@ -75,7 +83,7 @@ const LoginModal = () => {
       .required("Email Address is Required"),
     password: yup
       .string()
-      .min(8, ({ min }) => `Password must be at least ${min} characters`)
+      .min(3, ({ min }) => `Password must be at least ${min} characters`)
       .required("Password is required"),
   });
 
@@ -85,82 +93,102 @@ const LoginModal = () => {
         animationType="none"
         transparent={true}
         visible={isLoginModalOpen}
-        onRequestClose={() => {
-          handleClose();
-        }}
+        onRequestClose={handleClose}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Button onPress={handleClose}>Close</Button>
-            <Formik
-              validateOnMount={true}
-              validationSchema={loginValidationSchema}
-              initialValues={{ email: "", password: "" }}
-              onSubmit={(values) => login(values)}
-            >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                touched,
-                isValid,
-              }) => (
-                <>
-                  <TextInput
-                    name="email"
-                    placeholder="Email Address"
-                    style={styles.textInput}
-                    onChangeText={handleChange("email")}
-                    onBlur={handleBlur("email")}
-                    value={values.email}
-                    keyboardType="email-address"
-                  />
-                  {errors.email && touched.email && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  )}
-
-                  <TextInput
-                    name="password"
-                    placeholder="Password"
-                    style={styles.textInput}
-                    onChangeText={handleChange("password")}
-                    onBlur={handleBlur("password")}
-                    value={values.password}
-                    secureTextEntry={isPasswordSecure}
-                    right={
-                      <TextInput.Icon
-                        name={() => (
-                          <MaterialCommunityIcons
-                            name={isPasswordSecure ? "eye-off" : "eye"}
-                            size={20}
-                            color={Colors.black}
-                          />
-                        )} // where <Icon /> is any component from vector-icons or anything else
-                        onPress={() => {
-                          isPasswordSecure
-                            ? setIsPasswordSecure(false)
-                            : setIsPasswordSecure(true);
-                        }}
-                      />
-                    }
-                  />
-                  {errors.password && touched.password && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
-                  )}
-
-                  <Button
-                    onPress={handleSubmit}
-                    disabled={!isValid || values.email === ""}
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+          onPressOut={() => {
+            handleClose();
+          }}
+        >
+          <View style={styles.centeredView}>
+            <Pressable>
+              <View style={styles.modalOuterView}>
+                <IconButton
+                  icon="close-circle"
+                  size={25}
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={handleClose}
+                />
+                <View style={styles.modalView}>
+                  <Formik
+                    validateOnMount={true}
+                    validationSchema={loginValidationSchema}
+                    initialValues={{ email: "", password: "" }}
+                    onSubmit={(values) => {
+                      processLogin(values);
+                    }}
                   >
-                    Login
-                  </Button>
-                </>
-              )}
-            </Formik>
+                    {({
+                      handleChange,
+                      handleBlur,
+                      handleSubmit,
+                      values,
+                      errors,
+                      touched,
+                      isValid,
+                    }) => (
+                      <>
+                        <TextInput
+                          placeholder="Email Address"
+                          style={styles.textInput}
+                          onChangeText={handleChange("email")}
+                          onBlur={handleBlur("email")}
+                          value={values.email}
+                          keyboardType="email-address"
+                        />
+                        {errors.email && touched.email && (
+                          <Text style={styles.errorText}>{errors.email}</Text>
+                        )}
+
+                        <TextInput
+                          placeholder="Password"
+                          style={styles.textInput}
+                          onChangeText={handleChange("password")}
+                          onBlur={handleBlur("password")}
+                          value={values.password}
+                          secureTextEntry={isPasswordSecure}
+                          right={
+                            <TextInput.Icon
+                              name={() => (
+                                <MaterialCommunityIcons
+                                  name={isPasswordSecure ? "eye-off" : "eye"}
+                                  size={20}
+                                  color={Colors.black}
+                                />
+                              )} // where <Icon /> is any component from vector-icons or anything else
+                              onPress={() => {
+                                isPasswordSecure
+                                  ? setIsPasswordSecure(false)
+                                  : setIsPasswordSecure(true);
+                              }}
+                            />
+                          }
+                        />
+                        {errors.password && touched.password && (
+                          <Text style={styles.errorText}>
+                            {errors.password}
+                          </Text>
+                        )}
+
+                        <Button
+                          mode="contained"
+                          onPress={handleSubmit}
+                          disabled={!isValid || values.email === ""}
+                        >
+                          Login
+                        </Button>
+                      </>
+                    )}
+                  </Formik>
+                </View>
+              </View>
+            </Pressable>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
@@ -171,13 +199,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
   },
-  modalView: {
-    margin: 20,
+  modalOuterView: {
     backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: 10,
+    padding: 0,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -187,6 +213,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  modalView: {
+    padding: 20,
   },
   textStyle: {
     color: "white",
