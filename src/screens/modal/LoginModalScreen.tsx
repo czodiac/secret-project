@@ -22,11 +22,10 @@ import { Button, Colors, TextInput, IconButton } from "react-native-paper";
 import * as yup from "yup";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Google from "expo-auth-session/providers/google";
-import * as WebBrowser from "expo-web-browser";
+
 import { GoogleButton } from "../../components/buttons/GoogleButton";
 import { FacebookButton } from "../../components/buttons/FacebookButton";
 import { AppleButton } from "../../components/buttons/AppleButton";
-WebBrowser.maybeCompleteAuthSession();
 
 const LoginModal = () => {
   // Google SSO
@@ -217,7 +216,6 @@ const LoginModal = () => {
                         >
                           Login
                         </Button>
-                        <AppleButton type="sign-in" onPress={async () => {}} />
                         <GoogleButton
                           text="Continue with Google"
                           onPress={async () => {}}

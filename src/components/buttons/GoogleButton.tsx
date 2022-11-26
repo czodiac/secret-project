@@ -17,7 +17,6 @@ export const GoogleButton = ({
 }) => {
   return (
     <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      {/* specific margins to line up with the other social buttons */}
       <GoogleLogo style={styles.logo} />
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
@@ -28,7 +27,6 @@ const styles = StyleSheet.create({
   button: {
     display: "flex",
     flexDirection: "row",
-    width: "100%",
     borderRadius: 5,
     backgroundColor: "white",
     height: 50,
