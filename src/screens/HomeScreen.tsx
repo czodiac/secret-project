@@ -1,14 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { decrement, increment } from "../features/counter/counter";
+import { useAppDispatch, useAppSelector } from "../app/Hooks";
+import { decrement, increment } from "../features/counter/Counter";
 import { Button } from "react-native-paper";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { StackParams } from "../common/stackParams";
+import { StackParams } from "../common/StackParams";
 
 type Props = NativeStackScreenProps<StackParams, "Home">;
 
-const Home = ({ navigation }: Props) => {
+export const HomeScreen = ({ navigation }: Props) => {
   const count = useAppSelector((state) => state.counter.count);
   const dispatch = useAppDispatch();
 
@@ -63,5 +63,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
-export default Home;

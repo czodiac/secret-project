@@ -17,13 +17,48 @@ import {
   setLoginModalStatus,
   getRegisterModalStatus,
   setRegisterModalStatus,
-} from "../../slices/modalSlice";
+} from "../../slices/ModalSlice";
 import { Button, Colors, TextInput, IconButton } from "react-native-paper";
 import * as yup from "yup";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
+import * as Google from "expo-auth-session/providers/google";
+import * as WebBrowser from "expo-web-browser";
+import { GoogleButton } from "../../components/buttons/GoogleButton";
+import { FacebookButton } from "../../components/buttons/FacebookButton";
+import { AppleButton } from "../../components/buttons/AppleButton";
+WebBrowser.maybeCompleteAuthSession();
 
 const LoginModal = () => {
+  // Google SSO
+  const [accessToken, setAccessToken] = useState();
+  const [userInfo, setUserInfo] = useState();
+  /*
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId:
+      "133962004685-73nu5ro6io492rsp9gp42b9in0i59ua1.apps.googleusercontent.com",
+    iosClientId:
+      "133962004685-4ggekged7pj7ph3k373pk7rcmm4u3h8p.apps.googleusercontent.com",
+    expoClientId:
+      "133962004685-98fhg9tjq0pjlt96cjil9onuj7ghboqo.apps.googleusercontent.com",
+  });
+  */
+
+  /*
+  useEffect(() => {
+    if (response?.type === "success") {
+      //setAccessToken(response.authentication.accessToken);
+    }
+  }, [response]);
+*/
+  async function getUserData() {
+    let userInfoResponse = await fetch(
+      "https://www.googleapis.com/userinfo/v2/me"
+    );
+    headers: {
+      Authorization: `Bearer ${accessToken}`;
+    }
+  }
+
   const dispatch = useDispatch();
   const [msgSeverity, setMsgSeverity] = useState("error");
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
@@ -76,17 +111,6 @@ const LoginModal = () => {
     return () => source.cancel("Data fetching cancelled");
   };
 
-  const loginValidationSchema = yup.object().shape({
-    email: yup
-      .string()
-      .email("Please enter valid email")
-      .required("Email Address is Required"),
-    password: yup
-      .string()
-      .min(3, ({ min }) => `Password must be at least ${min} characters`)
-      .required("Password is required"),
-  });
-
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -116,7 +140,20 @@ const LoginModal = () => {
                 <View style={styles.modalView}>
                   <Formik
                     validateOnMount={true}
-                    validationSchema={loginValidationSchema}
+                    validationSchema={yup.object().shape({
+                      email: yup
+                        .string()
+                        .email("Please enter valid email")
+                        .required("Email Address is Required"),
+                      password: yup
+                        .string()
+                        .min(
+                          3,
+                          ({ min }) =>
+                            `Password must be at least ${min} characters`
+                        )
+                        .required("Password is required"),
+                    })}
                     initialValues={{ email: "", password: "" }}
                     onSubmit={(values) => {
                       processLogin(values);
@@ -173,7 +210,6 @@ const LoginModal = () => {
                             {errors.password}
                           </Text>
                         )}
-
                         <Button
                           mode="contained"
                           onPress={handleSubmit}
@@ -181,6 +217,15 @@ const LoginModal = () => {
                         >
                           Login
                         </Button>
+                        <AppleButton type="sign-in" onPress={async () => {}} />
+                        <GoogleButton
+                          text="Continue with Google"
+                          onPress={async () => {}}
+                        />
+                        <FacebookButton
+                          text="Continue with Facebook"
+                          onPress={async () => {}}
+                        />
                       </>
                     )}
                   </Formik>
@@ -213,6 +258,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: 350,
   },
   modalView: {
     padding: 20,

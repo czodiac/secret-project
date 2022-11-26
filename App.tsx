@@ -1,16 +1,16 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { store } from "./src/app/store";
+import { store } from "./src/app/Store";
 import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
-import Home from "./src/components/home";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Profile } from "./src/components/profile";
+import { HomeScreen } from "./src/screens/HomeScreen";
+import { ProfileScreen } from "./src/screens/ProfileScreen";
 import { Button } from "react-native-paper";
 import { View, Text } from "react-native";
-import { Header } from "./src/components/header";
-import LoginModal from "./src/components/modal/loginModal";
+import { Header } from "./src/components/Header";
+import LoginModal from "./src/screens/modal/LoginModalScreen";
 import * as Linking from "expo-linking";
-import { StackParams } from "./src/common/stackParams";
+import { StackParams } from "./src/common/StackParams";
 
 const CutiesStack = createNativeStackNavigator<StackParams>();
 
@@ -18,9 +18,9 @@ const linking: LinkingOptions<ReactNavigation.RootParamList> = {
   prefixes: [Linking.makeUrl("/")],
   config: {
     screens: {
-      Home: "Home",
-      Profile: "Profile",
-      User: {
+      HomeScreen: "Home",
+      ProfileScreen: "Profile",
+      UserScreen: {
         path: "user/:id",
         parse: {
           id: Number,
@@ -42,12 +42,12 @@ export default function App() {
         <CutiesStack.Navigator initialRouteName="Home">
           <CutiesStack.Screen
             name="Home"
-            component={Home}
+            component={HomeScreen}
             options={{ headerShown: false }}
           />
           <CutiesStack.Screen
             name="Profile"
-            component={Profile}
+            component={ProfileScreen}
             options={{ headerShown: false }}
           />
         </CutiesStack.Navigator>

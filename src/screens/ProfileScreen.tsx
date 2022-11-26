@@ -1,10 +1,10 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { Text, Button, View } from "react-native";
-import { StackParams } from "../common/stackParams";
+import { StackParams } from "../common/StackParams";
 
 type Props = NativeStackScreenProps<StackParams, "Profile">;
-export const Profile = ({ navigation }: Props) => {
+export const ProfileScreen = ({ navigation }: Props) => {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>My Profile</Text>
