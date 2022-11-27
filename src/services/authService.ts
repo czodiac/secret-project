@@ -2,8 +2,8 @@ import axios from "axios";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { endpoints } from "../../constants";
 import { User } from "../types/user";
-import { setLoadingMsg } from "../slices/loadingSlice"
 import { nodeUrl } from '../../constants'
+import { err } from "react-native-svg/lib/typescript/xml";
 
 type DataRes = { data: User };
 
@@ -26,9 +26,13 @@ const loginUser = (email: string, password: string) => {
       }
       return response.data;
     })
-    .catch((error) => {
-      console.log("loginUser: " + error);
-      return Promise.reject(error);
+    .catch((err) => {
+      let errMessage = 'Unknown server error.';
+      if (err!=null && err.response !=null && err.response.data!=null && err.response.data.message!=null) {
+        errMessage = err.response.data.message;
+      }
+      console.log("loginUser: " + errMessage);
+      return Promise.reject(errMessage);
     });
 };
 

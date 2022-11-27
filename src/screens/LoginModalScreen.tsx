@@ -23,7 +23,6 @@ import {
   TextInput,
   IconButton,
   Divider,
-  Banner,
 } from "react-native-paper";
 import * as yup from "yup";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -33,6 +32,7 @@ import {
   loginAsync,
   getAuthErrMessage,
   getAuthIsLoading,
+  setAuthErrMessage,
 } from "../slices/authSlice";
 
 const LoginModal = () => {
@@ -50,6 +50,7 @@ const LoginModal = () => {
   const handleClose = () => {
     dispatch(setLoginModalStatus(false));
     dispatch(setRegisterModalStatus(false));
+    dispatch(setAuthErrMessage(""));
   };
 
   const processLogin = (values: { email: string; password: string }) => {
@@ -83,23 +84,11 @@ const LoginModal = () => {
                   onPress={handleClose}
                 />
                 <View style={styles.modalView}>
-                  <Banner
-                    visible={authErrorMsg != "" ? true : false}
-                    actions={[]}
-                    icon={({ size }) => (
-                      <Image
-                        source={{
-                          uri: "https://avatars3.githubusercontent.com/u/17571969?s=400&v=4",
-                        }}
-                        style={{
-                          width: size,
-                          height: size,
-                        }}
-                      />
-                    )}
-                  >
-                    {authErrorMsg}
-                  </Banner>
+                  {authErrorMsg != "" ? (
+                    <View style={styles.errorView}>{authErrorMsg}</View>
+                  ) : (
+                    ""
+                  )}
                   <Formik
                     validateOnMount={true}
                     validationSchema={yup.object().shape({
@@ -203,6 +192,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  errorView: {
+    borderRadius: 4,
+    border: "1px #ecd8d8 solid",
+    paddingTop: 7,
+    paddingBottom: 15,
+    paddingLeft: 15,
+    paddingRight: 15,
+    backgroundColor: "rgb(253, 237, 237)",
+    color: "rgb(95, 33, 32)",
+    fontWeight: 400,
+    height: 35,
   },
   modalOuterView: {
     backgroundColor: "white",

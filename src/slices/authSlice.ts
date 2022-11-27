@@ -42,21 +42,31 @@ export const logoutAsync = createAsyncThunk("auth/logout", async () => {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    setAuthErrMessage: (state, action:PayloadAction<string>) => {
+      state.errMessage = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loginAsync.pending, (state) => {
         state.isLoading = true;
+        state.errMessage = '';
       })
       .addCase(loginAsync.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.errMessage = '';
         state.isLoggedIn = true;
         state.user = action.payload.user;
       })
       .addCase(loginAsync.rejected, (state, action) => {
         // Axios server error ex. 401 Unauthorized
         state.isLoading = false;
-        state.errMessage = 'Server error.'
+        if (action.error !=null && action.error.message!=null) {
+          state.errMessage = action.error.message;
+        } else {
+          state.errMessage = 'Unknown error';
+        }
         state.isLoggedIn = false;
       })
       .addCase(registerAsync.pending, (state) => {
@@ -71,6 +81,7 @@ const authSlice = createSlice({
   }
 });
 
+export const { setAuthErrMessage } = authSlice.actions;
 export const getAuth = (state:RootState) => state.auth;
 export const getAuthIsLoading = (state:RootState) => state.auth.isLoading;
 export const getAuthIsLoggedIn = (state:RootState) => state.auth.isLoggedIn;
