@@ -1,4 +1,4 @@
-export type StackParams = {
+export type Screens = {
     Home: undefined;
     Profile: undefined;
  };

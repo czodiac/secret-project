@@ -1,20 +1,20 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Alert, Modal, StyleSheet, Pressable } from "react-native";
 import { Button, Appbar } from "react-native-paper";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { openLoginModal, openRegisterModal } from "../slices/ModalSlice";
+import { openLoginModal, openRegisterModal } from "../slices/modalSlice";
 
 export const Header = (props: { changeScreen: (arg0: string) => void }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const showLoginModal = () => {
     dispatch(openLoginModal());
   };
 
   return (
     <Appbar.Header>
-      <Appbar.Content title="Iltae" subtitle="Secret" />
+      <Appbar.Content title="dsfg" subtitle="Secret" />
       <Appbar.Action icon="home" onPress={() => props.changeScreen("Home")} />
       <Appbar.Action
         icon="face-man-profile"

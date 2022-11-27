@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Formik, useFormik } from "formik";
 import {
   Alert,
@@ -12,102 +11,54 @@ import {
   TouchableOpacity,
 } from "react-native";
 import {
-  setModalWidth,
   getLoginModalStatus,
   setLoginModalStatus,
   getRegisterModalStatus,
   setRegisterModalStatus,
-} from "../../slices/ModalSlice";
+} from "../slices/modalSlice";
 import { Button, Colors, TextInput, IconButton } from "react-native-paper";
 import * as yup from "yup";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import * as Google from "expo-auth-session/providers/google";
-
-import { GoogleButton } from "../../components/buttons/GoogleButton";
-import { FacebookButton } from "../../components/buttons/FacebookButton";
-import { AppleButton } from "../../components/buttons/AppleButton";
+import { GoogleButton } from "../components/buttons/GoogleButton";
+import { useAuth } from "../app/useAuth";
+import {
+  getLoadingStatus,
+  setLoadingStatus,
+  getLoadingMsg,
+  setLoadingMsg,
+} from "../slices/loadingSlice";
+import { loginAsync } from "../slices/authSlice";
 
 const LoginModal = () => {
-  // Google SSO
-  const [accessToken, setAccessToken] = useState();
-  const [userInfo, setUserInfo] = useState();
-  /*
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId:
-      "133962004685-73nu5ro6io492rsp9gp42b9in0i59ua1.apps.googleusercontent.com",
-    iosClientId:
-      "133962004685-4ggekged7pj7ph3k373pk7rcmm4u3h8p.apps.googleusercontent.com",
-    expoClientId:
-      "133962004685-98fhg9tjq0pjlt96cjil9onuj7ghboqo.apps.googleusercontent.com",
-  });
-  */
-
-  /*
-  useEffect(() => {
-    if (response?.type === "success") {
-      //setAccessToken(response.authentication.accessToken);
-    }
-  }, [response]);
-*/
-  async function getUserData() {
-    let userInfoResponse = await fetch(
-      "https://www.googleapis.com/userinfo/v2/me"
-    );
-    headers: {
-      Authorization: `Bearer ${accessToken}`;
-    }
-  }
-
-  const dispatch = useDispatch();
+  const { googleAuth } = useAuth();
+  const isLoading = useAppSelector(getLoadingStatus);
+  const loadingMsg = useAppSelector(getLoadingMsg);
+  const dispatch = useAppDispatch();
   const [msgSeverity, setMsgSeverity] = useState("error");
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   //const { serverMessage } = useSelector(getServerResponseMessage);
-  const isLoginModalOpen = useSelector(getLoginModalStatus);
-  const isRegisterModalOpen = useSelector(getRegisterModalStatus);
+  const isLoginModalOpen = useAppSelector(getLoginModalStatus);
+  const isRegisterModalOpen = useAppSelector(getRegisterModalStatus);
 
   // Modal related
   const handleClose = () => {
     dispatch(setLoginModalStatus(false));
     dispatch(setRegisterModalStatus(false));
-    //formik.values.loginUsername = "";
-    //formik.values.registerEmail = "";
-    //formik.values.loginPassword = "";
   };
 
   const processLogin = (values: { email: string; password: string }) => {
-    const { email, password } = {
-      email: "sdf@sdf.sdf", //values.email,
-      password: "123123", //values.password,
-    };
-    const source = axios.CancelToken.source();
-    const API_URL =
-      "https://kiostart-online-authenticate.onrender.com/api/auth/";
-    const fetchUsers = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.post(API_URL + "signin", {
-          email,
-          password,
-        });
-        if (response.status === 200) {
-          setIsLoading(false);
-          return;
-        } else {
-          setMsgSeverity("error");
-          throw new Error("Failed to login.");
-        }
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          setMsgSeverity("error");
-          console.log(error);
-        } else {
-          setIsLoading(false);
-        }
-      }
-    };
-    fetchUsers();
-    return () => source.cancel("Data fetching cancelled");
+    dispatch(setLoadingMsg("Loading..."));
+    dispatch(setLoadingStatus(true));
+    console.log("Login clicked");
+    dispatch(loginAsync(values))
+      .then((response) => {
+        //setLoading(false);
+        console.log("1");
+      })
+      .catch((error) => {
+        //setLoading(false);
+        console.log("11");
+      });
   };
 
   return (
@@ -137,6 +88,7 @@ const LoginModal = () => {
                   onPress={handleClose}
                 />
                 <View style={styles.modalView}>
+                  {loadingMsg ? loadingMsg : ""}
                   <Formik
                     validateOnMount={true}
                     validationSchema={yup.object().shape({
@@ -212,17 +164,14 @@ const LoginModal = () => {
                         <Button
                           mode="contained"
                           onPress={handleSubmit}
+                          loading={isLoading}
                           disabled={!isValid || values.email === ""}
                         >
                           Login
                         </Button>
                         <GoogleButton
                           text="Continue with Google"
-                          onPress={async () => {}}
-                        />
-                        <FacebookButton
-                          text="Continue with Facebook"
-                          onPress={async () => {}}
+                          onPress={async () => await googleAuth()}
                         />
                       </>
                     )}

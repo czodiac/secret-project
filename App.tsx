@@ -1,6 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { store } from "./src/app/Store";
+import { store } from "./src/app/store";
 import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { HomeScreen } from "./src/screens/HomeScreen";
@@ -8,9 +8,9 @@ import { ProfileScreen } from "./src/screens/ProfileScreen";
 import { Button } from "react-native-paper";
 import { View, Text } from "react-native";
 import { Header } from "./src/components/Header";
-import LoginModal from "./src/screens/modal/LoginModalScreen";
+import LoginModal from "./src/screens/LoginModalScreen";
 import * as Linking from "expo-linking";
-import { StackParams } from "./src/common/StackParams";
+import { StackParams } from "./src/types/screens";
 
 const CutiesStack = createNativeStackNavigator<StackParams>();
 
@@ -51,8 +51,8 @@ export default function App() {
             options={{ headerShown: false }}
           />
         </CutiesStack.Navigator>
+        <LoginModal />
       </NavigationContainer>
-      <LoginModal />
     </Provider>
   );
 }

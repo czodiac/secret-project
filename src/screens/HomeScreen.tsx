@@ -1,41 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useAppDispatch, useAppSelector } from "../app/Hooks";
-import { decrement, increment } from "../features/counter/Counter";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Button } from "react-native-paper";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { StackParams } from "../common/StackParams";
+import { Screens } from "../types/screens";
+import { useUser } from "../app/useUser";
+import { useFocusEffect } from "@react-navigation/native";
 
-type Props = NativeStackScreenProps<StackParams, "Home">;
+type Props = NativeStackScreenProps<Screens, "Home">;
 
 export const HomeScreen = ({ navigation }: Props) => {
-  const count = useAppSelector((state) => state.counter.count);
   const dispatch = useAppDispatch();
 
-  const incrementHandler = () => {
-    dispatch(increment());
-  };
-  const decrementHandler = () => {
-    dispatch(decrement());
+  const { getUser } = useUser();
+  const getUserHere = () => {
+    console.log("Get User");
+    getUser();
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.counterView}>
-        <Text style={styles.count}>{count}</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <View style={styles.button}>
-          <Button mode="contained" onPress={decrementHandler}>
-            Decrement
-          </Button>
-        </View>
-        <View style={styles.button}>
-          <Button mode="contained" onPress={incrementHandler}>
-            Increment
-          </Button>
-        </View>
-      </View>
+      <Button mode="contained" onPress={getUserHere}>
+        Get User
+      </Button>
     </View>
   );
 };
@@ -46,20 +33,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-  },
-  count: {
-    fontSize: 20,
-  },
-  counterView: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  button: {
-    marginHorizontal: 10,
-    marginTop: 20,
   },
 });
