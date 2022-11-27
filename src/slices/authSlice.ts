@@ -1,13 +1,23 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { setLoadingMsg } from "./loadingSlice";
 import AuthService from "../services/authService";
 import { RootState } from "../app/store";
+import { User } from "../types/user";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
-const initialState = user
-  ? { isLoggedIn: true, user }
-  : { isLoggedIn: false, user: null };
+export interface AuthState {
+  isLoading : boolean; 
+  isLoggedIn : boolean;
+  errMessage: string;
+  user?: User;
+}
+
+const initialState: AuthState = {
+  isLoading: false,  
+  isLoggedIn: false,
+  errMessage: '',
+  user: undefined
+}
 
 export const registerAsync = createAsyncThunk(
   "auth/register",
@@ -36,14 +46,18 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginAsync.pending, (state) => {
-        state.isLoggedIn = false;
+        state.isLoading = true;
       })
       .addCase(loginAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.isLoggedIn = true;
         state.user = action.payload.user;
       })
-      .addCase(loginAsync.rejected, (state) => {
-        state.isLoggedIn = true;
+      .addCase(loginAsync.rejected, (state, action) => {
+        // Axios server error ex. 401 Unauthorized
+        state.isLoading = false;
+        state.errMessage = 'Server error.'
+        state.isLoggedIn = false;
       })
       .addCase(registerAsync.pending, (state) => {
         state.isLoggedIn = false;
@@ -58,5 +72,8 @@ const authSlice = createSlice({
 });
 
 export const getAuth = (state:RootState) => state.auth;
-const { reducer } = authSlice;
-export default reducer;
+export const getAuthIsLoading = (state:RootState) => state.auth.isLoading;
+export const getAuthIsLoggedIn = (state:RootState) => state.auth.isLoggedIn;
+export const getAuthErrMessage = (state:RootState) => state.auth.errMessage;
+
+export default authSlice.reducer;

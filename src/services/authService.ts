@@ -25,6 +25,10 @@ const loginUser = (email: string, password: string) => {
         //localStorage.setItem("user", JSON.stringify(response.data));
       }
       return response.data;
+    })
+    .catch((error) => {
+      console.log("loginUser: " + error);
+      return Promise.reject(error);
     });
 };
 

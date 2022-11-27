@@ -9,6 +9,7 @@ import {
   Pressable,
   View,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import {
   getLoginModalStatus,
@@ -16,23 +17,28 @@ import {
   getRegisterModalStatus,
   setRegisterModalStatus,
 } from "../slices/modalSlice";
-import { Button, Colors, TextInput, IconButton } from "react-native-paper";
+import {
+  Button,
+  Colors,
+  TextInput,
+  IconButton,
+  Divider,
+  Banner,
+} from "react-native-paper";
 import * as yup from "yup";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { GoogleButton } from "../components/buttons/GoogleButton";
 import { useAuth } from "../app/useAuth";
 import {
-  getLoadingStatus,
-  setLoadingStatus,
-  getLoadingMsg,
-  setLoadingMsg,
-} from "../slices/loadingSlice";
-import { loginAsync } from "../slices/authSlice";
+  loginAsync,
+  getAuthErrMessage,
+  getAuthIsLoading,
+} from "../slices/authSlice";
 
 const LoginModal = () => {
   const { googleAuth } = useAuth();
-  const isLoading = useAppSelector(getLoadingStatus);
-  const loadingMsg = useAppSelector(getLoadingMsg);
+  const isLoading = useAppSelector(getAuthIsLoading);
+  const authErrorMsg = useAppSelector(getAuthErrMessage);
   const dispatch = useAppDispatch();
   const [msgSeverity, setMsgSeverity] = useState("error");
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
@@ -47,18 +53,7 @@ const LoginModal = () => {
   };
 
   const processLogin = (values: { email: string; password: string }) => {
-    dispatch(setLoadingMsg("Loading..."));
-    dispatch(setLoadingStatus(true));
-    console.log("Login clicked");
-    dispatch(loginAsync(values))
-      .then((response) => {
-        //setLoading(false);
-        console.log("1");
-      })
-      .catch((error) => {
-        //setLoading(false);
-        console.log("11");
-      });
+    dispatch(loginAsync(values));
   };
 
   return (
@@ -88,7 +83,23 @@ const LoginModal = () => {
                   onPress={handleClose}
                 />
                 <View style={styles.modalView}>
-                  {loadingMsg ? loadingMsg : ""}
+                  <Banner
+                    visible={authErrorMsg != "" ? true : false}
+                    actions={[]}
+                    icon={({ size }) => (
+                      <Image
+                        source={{
+                          uri: "https://avatars3.githubusercontent.com/u/17571969?s=400&v=4",
+                        }}
+                        style={{
+                          width: size,
+                          height: size,
+                        }}
+                      />
+                    )}
+                  >
+                    {authErrorMsg}
+                  </Banner>
                   <Formik
                     validateOnMount={true}
                     validationSchema={yup.object().shape({
@@ -169,6 +180,7 @@ const LoginModal = () => {
                         >
                           Login
                         </Button>
+                        <Divider />
                         <GoogleButton
                           text="Continue with Google"
                           onPress={async () => await googleAuth()}
