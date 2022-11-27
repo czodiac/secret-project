@@ -8,7 +8,6 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import AuthService from "../services/authService"
 import { User } from "../types/user";
 import { useUser } from "./useUser";
-import { setLoadingStatus, setLoadingMsg } from '../slices/loadingSlice';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();

@@ -1,9 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction, AnyAction } from "@reduxjs/toolkit";
 import AuthService from "../services/authService";
 import { RootState } from "../app/store";
 import { User } from "../types/user";
-
-const user = JSON.parse(localStorage.getItem("user"));
+import { AnyAsyncThunk } from "@reduxjs/toolkit/dist/matchers";
 
 export interface AuthState {
   isLoading : boolean; 
@@ -53,11 +52,13 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.errMessage = '';
       })
-      .addCase(loginAsync.fulfilled, (state, action) => {
+      .addCase(loginAsync.fulfilled, (state, {payload}) => {
         state.isLoading = false;
         state.errMessage = '';
         state.isLoggedIn = true;
-        state.user = action.payload.user;
+        if (payload!=null && payload.user!=null) {
+          state.user = <User><unknown>payload.user;
+        }
       })
       .addCase(loginAsync.rejected, (state, action) => {
         // Axios server error ex. 401 Unauthorized

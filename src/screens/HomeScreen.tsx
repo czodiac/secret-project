@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Button } from "react-native-paper";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Screens } from "../types/screens";
-import { useUser } from "../app/useUser";
 import { useFocusEffect } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<Screens, "Home">;
@@ -12,16 +11,10 @@ type Props = NativeStackScreenProps<Screens, "Home">;
 export const HomeScreen = ({ navigation }: Props) => {
   const dispatch = useAppDispatch();
 
-  const { getUser } = useUser();
-  const getUserHere = () => {
-    console.log("Get User");
-    getUser();
-  };
-
   return (
     <View style={styles.container}>
-      <Button mode="contained" onPress={getUserHere}>
-        Get User
+      <Button mode="contained" onPress={() => {}}>
+        Home
       </Button>
     </View>
   );

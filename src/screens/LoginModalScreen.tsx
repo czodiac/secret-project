@@ -165,7 +165,9 @@ const LoginModal = () => {
                           mode="contained"
                           onPress={handleSubmit}
                           loading={isLoading}
-                          disabled={!isValid || values.email === ""}
+                          disabled={
+                            !isValid || values.email === "" || isLoading
+                          }
                         >
                           Login
                         </Button>
