@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { endpoints } from "../../constants";
 import { User } from "../types/user";
 import { nodeUrl } from '../../constants'
-import { err } from "react-native-svg/lib/typescript/xml";
+import { handleTryCatchError } from "../utils/handleError";
+import { googleUserInfoUrl } from "../../constants"
 
 type DataRes = { data: User };
 
@@ -21,14 +21,11 @@ const loginUser = (email: string, password: string) => {
       password,
     })
     .then((response) => {
-      if (response.data.accessToken) {
-        //localStorage.setItem("user", JSON.stringify(response.data));
-      }
       return response.data;
     })
     .catch((err) => {
       let errMessage = 'Unknown server error.';
-      if (err!=null && err.response !=null && err.response.data!=null && err.response.data.message!=null) {
+      if (err && err.response && err.response.data && err.response.data.message) {
         errMessage = err.response.data.message;
       }
       console.log("loginUser: " + errMessage);
@@ -36,26 +33,28 @@ const loginUser = (email: string, password: string) => {
     });
 };
 
-const logout = () => {
-  //localStorage.removeItem("user");
-};
 
-const googleLoginOrRegister = async (accessToken: string) => {
-  try {
-    const { data }: DataRes = await axios.post(endpoints.google, {
-      accessToken,
+const getGoogleProfile = async (accessToken: string) => {
+  const bearer_token = `Bearer ${accessToken}`;
+  const config = {
+    headers: {
+      Authorization: bearer_token
+    }
+  };
+  return axios
+    .get(googleUserInfoUrl, config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((e) => {
+      handleTryCatchError('getGoogleProfile', 'Google login unsuccessful.', e);
     });
-    return data;
-  } catch (error) {
-    //useAppDispatch()(setLoadingMsg(error));
-  }
 };
 
 const authService = {
   registerUser,
   loginUser,
-  logout,
-  googleLoginOrRegister
+  getGoogleProfile
 };
 
 export default authService;

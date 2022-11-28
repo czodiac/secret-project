@@ -2,14 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Formik, useFormik } from "formik";
 import {
-  Alert,
   Modal,
   StyleSheet,
   Text,
   Pressable,
   View,
   TouchableOpacity,
-  Image,
 } from "react-native";
 import {
   getLoginModalStatus,
@@ -27,17 +25,19 @@ import {
 import * as yup from "yup";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { GoogleButton } from "../components/buttons/GoogleButton";
-import { useAuth } from "../app/useAuth";
+import { useUser } from "../app/useUser";
 import {
   loginAsync,
   getAuthErrMessage,
   getAuthIsLoading,
   setAuthErrMessage,
+  getAuthIsLoggedIn,
 } from "../slices/authSlice";
 
 const LoginModal = () => {
-  const { googleAuth } = useAuth();
+  const { googleAuth } = useUser();
   const isLoading = useAppSelector(getAuthIsLoading);
+  const isLoggedIn = useAppSelector(getAuthIsLoggedIn);
   const authErrorMsg = useAppSelector(getAuthErrMessage);
   const dispatch = useAppDispatch();
   const [msgSeverity, setMsgSeverity] = useState("error");
@@ -52,6 +52,12 @@ const LoginModal = () => {
     dispatch(setRegisterModalStatus(false));
     dispatch(setAuthErrMessage(""));
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      dispatch(setLoginModalStatus(false));
+    }
+  }, [isLoggedIn]);
 
   const processLogin = (values: { email: string; password: string }) => {
     dispatch(loginAsync(values));
@@ -84,10 +90,10 @@ const LoginModal = () => {
                   onPress={handleClose}
                 />
                 <View style={styles.modalView}>
-                  {authErrorMsg != "" ? (
+                  {authErrorMsg ? (
                     <View style={styles.errorView}>{authErrorMsg}</View>
                   ) : (
-                    ""
+                    <></>
                   )}
                   <Formik
                     validateOnMount={true}
@@ -165,13 +171,14 @@ const LoginModal = () => {
                           mode="contained"
                           onPress={handleSubmit}
                           loading={isLoading}
+                          style={styles.loginButton}
                           disabled={
                             !isValid || values.email === "" || isLoading
                           }
                         >
                           Login
                         </Button>
-                        <Divider />
+                        <Divider style={{ marginTop: 10 }} />
                         <GoogleButton
                           text="Continue with Google"
                           onPress={async () => await googleAuth()}
@@ -195,6 +202,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  loginButton: {},
   errorView: {
     borderRadius: 4,
     border: "1px #ecd8d8 solid",
