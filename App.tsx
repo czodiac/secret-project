@@ -18,9 +18,9 @@ const linking: LinkingOptions<ReactNavigation.RootParamList> = {
   prefixes: [Linking.makeUrl("/")],
   config: {
     screens: {
-      HomeScreen: "Home",
-      ProfileScreen: "Profile",
-      UserScreen: {
+      Home: "Home",
+      Profile: "Profile",
+      User: {
         path: "user/:id",
         parse: {
           id: Number,

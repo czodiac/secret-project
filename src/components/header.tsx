@@ -21,13 +21,22 @@ export const Header = (props: { changeScreen: (arg0: string) => void }) => {
         icon="face-man-profile"
         onPress={() => props.changeScreen("Profile")}
       />
-      {authUser === undefined ? (
-        <Appbar.Action icon="login" onPress={showLoginModal} />
-      ) : (
+      {authUser ? (
         <Appbar.Action icon="logout" onPress={logoutUser} />
+      ) : (
+        <Appbar.Action
+          onFocus={() => {
+            console.log("hi");
+          }}
+          icon="login"
+          onPress={showLoginModal}
+        />
       )}
-
-      <Appbar.Action icon="account-plus" onPress={() => {}} />
+      {authUser ? (
+        <></>
+      ) : (
+        <Appbar.Action icon="account-plus" onPress={() => {}} />
+      )}
       <Appbar.Action icon="magnify" onPress={() => {}} />
       <Appbar.Action icon="dots-vertical" onPress={() => {}} />
     </Appbar.Header>
