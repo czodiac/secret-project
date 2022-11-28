@@ -10,9 +10,9 @@ import { View, Text } from "react-native";
 import { Header } from "./src/components/Header";
 import LoginModal from "./src/screens/LoginModalScreen";
 import * as Linking from "expo-linking";
-import { StackParams } from "./src/types/screens";
+import { Screens } from "./src/types/screens";
 
-const CutiesStack = createNativeStackNavigator<StackParams>();
+const CutiesStack = createNativeStackNavigator<Screens>();
 
 const linking: LinkingOptions<ReactNavigation.RootParamList> = {
   prefixes: [Linking.makeUrl("/")],

@@ -91,7 +91,9 @@ const LoginModal = () => {
                 />
                 <View style={styles.modalView}>
                   {authErrorMsg ? (
-                    <View style={styles.errorView}>{authErrorMsg}</View>
+                    <View style={styles.errorView}>
+                      <Text>{authErrorMsg}</Text>
+                    </View>
                   ) : (
                     <></>
                   )}
@@ -206,14 +208,14 @@ const styles = StyleSheet.create({
   errorView: {
     borderRadius: 4,
     border: "1px #ecd8d8 solid",
-    paddingTop: 7,
+    paddingTop: 10,
     paddingBottom: 15,
     paddingLeft: 15,
     paddingRight: 15,
     backgroundColor: "rgb(253, 237, 237)",
     color: "rgb(95, 33, 32)",
     fontWeight: 400,
-    height: 35,
+    height: 40,
   },
   modalOuterView: {
     backgroundColor: "white",
