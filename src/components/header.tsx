@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { Appbar } from "react-native-paper";
+import { Appbar, Avatar } from "react-native-paper";
 import { openLoginModal, openRegisterModal } from "../slices/modalSlice";
 import { getAuthUser } from "../slices/authSlice";
 import { useUser } from "../app/useUser";
+import { StyleSheet } from "react-native";
 
 export const Header = (props: { changeScreen: (arg0: string) => void }) => {
   const dispatch = useAppDispatch();
@@ -12,15 +13,43 @@ export const Header = (props: { changeScreen: (arg0: string) => void }) => {
   const showLoginModal = () => {
     dispatch(openLoginModal());
   };
+  const [profileImg, setProfileImg] = useState("");
+  useEffect(() => {
+    // To Do: Needs to have default pic.
+    let profileImg = "";
+    if (authUser) {
+      // To Do: Needs to check if it's google login or native login.
+      if (authUser.picture) {
+        profileImg = authUser.picture;
+      }
+    }
+    setProfileImg(profileImg);
+  }, [authUser]);
+
+  const styles = StyleSheet.create({
+    profile: {
+      backgroundImage: `url(${profileImg})`,
+      backgroundPosition: "center",
+      backgroundSize: "contain",
+      backgroundRepeat: "no-repeat",
+      height: 24,
+      width: 24,
+    },
+  });
 
   return (
     <Appbar.Header>
       <Appbar.Content title="Iltae" subtitle="Secret" />
       <Appbar.Action icon="home" onPress={() => props.changeScreen("Home")} />
-      <Appbar.Action
-        icon="face-man-profile"
-        onPress={() => props.changeScreen("Profile")}
-      />
+      {authUser ? (
+        <Appbar.Action
+          icon=""
+          style={styles.profile}
+          onPress={() => props.changeScreen("Profile")}
+        />
+      ) : (
+        <></>
+      )}
       {authUser ? (
         <Appbar.Action icon="logout" onPress={logoutUser} />
       ) : (
