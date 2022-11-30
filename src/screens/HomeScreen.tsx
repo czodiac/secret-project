@@ -5,14 +5,13 @@ import { Button } from "react-native-paper";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Screens } from "../common/types";
 import { useUser } from "../app/useUser";
-import { getAuthUser, getAuthMethod } from "../slices/authSlice";
+import { getAuthUser } from "../slices/authSlice";
 import { AuthMethod } from "../common/enums";
 
 type Props = NativeStackScreenProps<Screens, "Home">;
 
 export const HomeScreen = ({ navigation }: Props) => {
   const dispatch = useAppDispatch();
-  const authMethod = useAppSelector(getAuthMethod);
   const authUser = useAppSelector(getAuthUser);
   const { getUser } = useUser();
   const getUserHere = () => {
