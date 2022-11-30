@@ -10,7 +10,7 @@ import { View, Text } from "react-native";
 import { Header } from "./src/components/Header";
 import LoginModal from "./src/screens/LoginModalScreen";
 import * as Linking from "expo-linking";
-import { Screens } from "./src/types/screens";
+import { Screens } from "./src/common/types";
 
 const CutiesStack = createNativeStackNavigator<Screens>();
 

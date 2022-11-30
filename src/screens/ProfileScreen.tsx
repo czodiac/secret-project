@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { Text, Button, View } from "react-native";
-import { Screens } from "../types/screens";
+import { Screens } from "../common/types";
 
 type Props = NativeStackScreenProps<Screens, "Profile">;
 export const ProfileScreen = ({ navigation }: Props) => {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { ErrorRes } from "../types/error";
+import { ErrorRes } from "../common/types";
 
 export const handleError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
@@ -12,7 +12,7 @@ export const handleError = (error: unknown) => {
   }
 };
 
-export const handleTryCatchError = (funcName:string, extraMessage: string | undefined, err: any) => {
+export const logAndAlertError = (funcName:string, extraMessage: string | undefined, err: any) => {
   let errMsg = 'Unknown error';
   if (err) {
     errMsg = err;

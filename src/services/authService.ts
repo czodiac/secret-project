@@ -1,11 +1,8 @@
 import axios from "axios";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { User } from "../types/user";
 import { nodeUrl } from '../../constants'
-import { handleTryCatchError } from "../utils/handleError";
+import { logAndAlertError } from "../utils/handleError";
 import { googleUserInfoUrl } from "../../constants"
-
-type DataRes = { data: User };
+import { AuthMethod } from "../common/enums";
 
 const registerUser = (email: string, password: string) => {
   return axios.post(nodeUrl + "/auth/signup", {
@@ -21,9 +18,15 @@ const loginUser = (email: string, password: string) => {
       password,
     })
     .then((response) => {
-      return response.data;
+      if (response && response.data) {
+        Object.assign(response.data, { authMethod: AuthMethod.Native });
+        return response.data;
+      } else {
+        return Promise.reject('Empty response from Node.'); 
+      }
     })
     .catch((err) => {
+      // This is handled differently from "logAndAlertError". Need to raise Promise.reject for Redux Thunk's reject method to catch it. 
       let errMessage = 'Unknown server error.';
       if (err && err.response && err.response.data && err.response.data.message) {
         errMessage = err.response.data.message;
@@ -44,10 +47,15 @@ const getGoogleProfile = async (accessToken: string) => {
   return axios
     .get(googleUserInfoUrl, config)
     .then((response) => {
-      return response.data;
+      if (response && response.data) {
+        Object.assign(response.data, { authMethod: AuthMethod.Google });
+        return response.data;
+      } else {
+        logAndAlertError('getGoogleProfile', 'Google profile API returned an empty response.', '');  
+      }
     })
     .catch((e) => {
-      handleTryCatchError('getGoogleProfile', 'Google login unsuccessful.', e);
+      logAndAlertError('getGoogleProfile', 'Google login unsuccessful.', e);
     });
 };
 

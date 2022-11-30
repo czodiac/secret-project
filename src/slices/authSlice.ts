@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction, AnyAction } from "@reduxjs/toolkit";
 import AuthService from "../services/authService";
 import { RootState } from "../app/store";
-import { AnyAsyncThunk } from "@reduxjs/toolkit/dist/matchers";
 
 export interface AuthState {
   isLoading : boolean; 

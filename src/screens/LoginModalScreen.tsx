@@ -33,6 +33,7 @@ import {
   setAuthErrMessage,
   getAuthIsLoggedIn,
 } from "../slices/authSlice";
+import { AuthMethod } from "../common/enums";
 
 const LoginModal = () => {
   const { googleAuth } = useUser();
@@ -60,6 +61,7 @@ const LoginModal = () => {
   }, [isLoggedIn]);
 
   const processLogin = (values: { email: string; password: string }) => {
+    //Object.assign(values, { authMethod: AuthMethod.Native }); // Add item to an existing object.
     dispatch(loginAsync(values));
   };
 

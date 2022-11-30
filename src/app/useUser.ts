@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
-import { User } from "../types/user";
+import { User } from "../common/types";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { getAuthUser, setAuthUser, setAuthUserUpdated, getAuthUserUpdated } from '../slices/authSlice';
 import { useAppDispatch, useAppSelector } from './hooks';
-import { handleTryCatchError } from '../utils/handleError';
+import { logAndAlertError } from '../utils/handleError';
 import * as Google from "expo-auth-session/providers/google";
 import AuthService from "../services/authService";
 import { setLoginModalStatus } from "../slices/modalSlice";
@@ -14,7 +14,7 @@ export const useUser = () => {
   const dispatch = useAppDispatch();
   const authUser = useAppSelector(getAuthUser);
   const authUserUpdated = useAppSelector(getAuthUserUpdated);
-  const keyName = 'user';
+  const keyUser = 'user';
 
   useEffect(() => {
     getUser().then((user) => {
@@ -51,7 +51,7 @@ export const useUser = () => {
           dispatch(setLoginModalStatus(false)); // Close login modal.
         }
       } catch (err: any) {
-        handleTryCatchError('loginUserWithGoogle', 'Unable to store user info in local app storage for Google login.', err);
+        logAndAlertError('loginUserWithGoogle', 'Unable to store user info in local app storage for Google login.', err);
       }
     }
 
@@ -61,19 +61,19 @@ export const useUser = () => {
     }
   }, [googleResponse]);
 
-  const storeUserInAppStorage = async(user: User) => {
+  const storeUserInAppStorage = async(user: any) => {
     try {
       let stringUser = JSON.stringify(user);
       if (Platform.OS === 'web') {
         // To store object value: const jsonValue = JSON.stringify(value); 
-        await AsyncStorage.setItem(keyName, stringUser);
+        await AsyncStorage.setItem(keyUser, stringUser);
         console.log('User for web set');
       } else {
-        await SecureStore.setItemAsync(keyName, stringUser);
+        await SecureStore.setItemAsync(keyUser, stringUser);
         console.log('User for ' + Platform.OS + ' set');
       }
     } catch (e) {
-      handleTryCatchError('storeUserInAppStorage', 'Unable to store user info in local app storage', e);
+      logAndAlertError('storeUserInAppStorage', 'Unable to store user info in local app storage', e);
     }
   };
 
@@ -82,15 +82,15 @@ export const useUser = () => {
       console.log('User from Redux store: ' + JSON.stringify(authUser));
       let jsonValue = null;
       if (Platform.OS === 'web') {
-        jsonValue = await AsyncStorage.getItem(keyName);
+        jsonValue = await AsyncStorage.getItem(keyUser);
         console.log('User for web: ' + jsonValue);
       } else {
-        jsonValue = await SecureStore.getItemAsync(keyName);
+        jsonValue = await SecureStore.getItemAsync(keyUser);
         console.log('User for mobile: ' + jsonValue);
       }
       return jsonValue ? JSON.parse(jsonValue) : null;
     } catch(e) {
-      handleTryCatchError('getUser', undefined, e);
+      logAndAlertError('getUser', undefined, e);
     }
   };
 
@@ -100,14 +100,14 @@ export const useUser = () => {
         dispatch(setAuthUserUpdated(false));
         dispatch(setAuthUser(undefined)); // Delete auth user from Redux store.
         if (Platform.OS === 'web') {
-          await AsyncStorage.removeItem(keyName);
+          await AsyncStorage.removeItem(keyUser);
           console.log('Successfully logged out for web.');
         } else {
-          SecureStore.deleteItemAsync(keyName);
+          SecureStore.deleteItemAsync(keyUser);
           console.log('Successfully logged out for mobile.');
         }
       } catch(e) {
-        handleTryCatchError('logoutUser', undefined, e);
+        logAndAlertError('logoutUser', undefined, e);
       }
   };
 
