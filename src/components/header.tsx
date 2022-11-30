@@ -5,6 +5,7 @@ import { openLoginModal, openRegisterModal } from "../slices/modalSlice";
 import { getAuthUser } from "../slices/authSlice";
 import { useUser } from "../app/useUser";
 import { StyleSheet } from "react-native";
+import noProfliePic from "../../assets/user-profile-icon.svg";
 
 export const Header = (props: { changeScreen: (arg0: string) => void }) => {
   const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ export const Header = (props: { changeScreen: (arg0: string) => void }) => {
   const [profileImg, setProfileImg] = useState("");
   useEffect(() => {
     // To Do: Needs to have default pic.
-    let profileImg = "";
+    let profileImg = noProfliePic;
     if (authUser) {
       // To Do: Needs to check if it's google login or native login.
       if (authUser.picture) {
